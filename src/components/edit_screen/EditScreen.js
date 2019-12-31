@@ -59,8 +59,12 @@ class EditScreen extends Component {
         }
     }
 
-    handleMemberNameChange = (email) => {
+    handleMemberEdit = (name, email, ogEmail) => {
+        console.log('Handle member name change: ' + name)
         console.log('Handle member email change: ' + email)
+        console.log('OG Email: ' + ogEmail)
+        let newParticipants = this.state.participants
+        console.log(newParticipants.indexOf(ogEmail))
     }
 
     // Is given an email to remove the member.
@@ -131,7 +135,7 @@ class EditScreen extends Component {
                         return(
                             <Member 
                                 id={memberCardID} 
-                                handleMemberNameChange={this.handleMemberNameChange} 
+                                handleMemberEdit={this.handleMemberEdit} 
                                 handleRemoveMember={this.handleRemoveMember}
                                 member={member}
                             />
