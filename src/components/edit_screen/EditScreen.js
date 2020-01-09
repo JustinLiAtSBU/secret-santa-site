@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { Link, NavLink, Redirect } from 'react-router-dom';
 import { firestoreConnect } from 'react-redux-firebase';
-import { TextInput, Collapsible, CollapsibleItem, Button, Tab, Tabs, Icon, Navbar, NavItem, SideNav, SideNavItem, ReactTabs, TabList, Modal } from 'react-materialize';
+import { TextInput, Button, Icon, Navbar, NavItem, SideNav, SideNavItem, Modal } from 'react-materialize';
 import { deleteSecretSantaList, saveSecretSantaList } from '../../store/database/asynchHandler'
 import Member from './Member';
 
@@ -20,7 +19,9 @@ class EditScreen extends Component {
         userID: this.props.secretSantaList['userID']
     }
 
-    // THIS IS FOR THE SECRET SANTA GENERATOR SCREEN FUNCTIONS
+    /**
+     * These functions are for the actual secret santa list.
+     */
     handleDelete = (e, id) => {
         this.props.deleteSecretSantaList(id)
         this.props.history.push('/')
@@ -40,9 +41,10 @@ class EditScreen extends Component {
         let newDesc = document.getElementById('secret-santa-desc').value
         this.setState({ description: newDesc })
     }
-    // THIS IS END OF SECRET SANTA GENERATOR SCREEN FUNCTIONS
 
-    // For adding a new person
+    /**
+     * These functions are for editing members.
+     */
     handleAddPerson = () => {
         let newName = document.getElementById('secret-santa-add-name').value
         let newEmail = document.getElementById('secret-santa-add-email').value
@@ -55,30 +57,45 @@ class EditScreen extends Component {
             let newEntry = {'name': newName, 'email': newEmail}
             oldParticipants.push(newEntry)
             this.setState({ participants: oldParticipants })
+            document.getElementById('secret-santa-add-name').value = ''
+            document.getElementById('secret-santa-add-email').value = ''
             this.props.history.push('/list/' + this.props.id)
         }
     }
 
-    handleMemberEdit = (name, email, ogEmail) => {
-        console.log('Handle member name change: ' + name)
-        console.log('Handle member email change: ' + email)
-        console.log('OG Email: ' + ogEmail)
+    handleMemberEdit = (name, email, ogEmail, ogName) => {
         let newParticipants = this.state.participants
-        console.log(newParticipants.indexOf(ogEmail))
-    }
+        let editedMember = {'name': name, 'email': email}
+        for (var key in newParticipants) {
+            if (newParticipants[key]['email'] == ogEmail && newParticipants[key]['name'] == ogName) {  
+                newParticipants.splice(key, 1, editedMember)
+                break;
+            }
+        }
+        this.setState({ participants: newParticipants })
+        console.log(this.state)  
+    } 
 
-    // Is given an email to remove the member.
     handleRemoveMember= (e, id) => {
         e.stopPropagation()
         let newParticipants = this.state.participants
         for (var key in newParticipants) {
             if (newParticipants[key]['email'] == id) {    
                 newParticipants.splice(key, 1)
+                break;
             }
         }
         this.setState({ participants: newParticipants })
     }
 
+    generateRandom = () => {
+        console.log(this.state.participants)
+        let div = document.getElementById('participants-div')
+        let p = <p>What's up</p>
+        div.appendChild(p)
+    }
+
+    // This is to go to the home screen. Pushes the link onto history.
     goHome = () => {
         this.props.history.push('/')
     }
@@ -95,6 +112,7 @@ class EditScreen extends Component {
         }
         let userEmail = theOne["email"];
         let userName = theOne["firstName"] + " " + theOne["lastName"]
+
         return (
             <div style={{ position: 'relative' }}>
                 <Navbar
@@ -129,7 +147,6 @@ class EditScreen extends Component {
                         <label htmlFor='text'>Description</label>
                         <input onChange={this.handleDescriptionChange} defaultValue={secretSantaList['description']} style= {{ fontFamily: 'CourierPrimeRegular'}} className='active' type='text' id='secret-santa-desc' />     
                     </div>
-
                     {participants && participants.map(member => {
                         let memberCardID = 'card-' + member['email']
                         return(
@@ -141,41 +158,61 @@ class EditScreen extends Component {
                             />
                         )
                     })}
-
                     <div style={{ textAlign: 'center' }}>
-
-                    <Modal
-                        actions={[<Button flat modal="close" node="button" waves="green">Cancel</Button>]}
-                            bottomSheet={false}
-                            fixedFooter={false}
-                            header="Details"
-                            id='add-modal'
-                            options={{
-                                dismissible: true,
-                                endingTop: '10%',
-                                inDuration: 250,
-                                onCloseEnd: null,
-                                onCloseStart: null,
-                                onOpenEnd: null,
-                                onOpenStart: null,
-                                opacity: 0.5,
-                                outDuration: 250,
-                                preventScrolling: true,
-                                startingTop: '4%'
-                            }}
-                            trigger={<Button flat node="button" waves="light" style={{ float: 'center', width: '98%' }}>
-                            {<Icon>add_circle_outline</Icon>}
-                        </Button>}
-                        >
-                        <TextInput label='Name' id='secret-santa-add-name'/>
-                        <TextInput email label="Email" validate error='Invalid email' id='secret-santa-add-email'/>
-                        <p style={{ color: 'red', display: 'none'}}  id='add-error-msg'>Error</p>
-                        <Button modal='close' onClick={(e) => this.handleAddPerson(e, id)} id="add-button" flat type='submit'>Confirm</Button>
-                    </Modal> 
-
-                        
+                        <Modal
+                            actions={[<Button flat modal="close" node="button" waves="green">Cancel</Button>]}
+                                bottomSheet={false}
+                                fixedFooter={false}
+                                header="Details"
+                                id='add-modal'
+                                options={{
+                                    dismissible: true,
+                                    endingTop: '10%',
+                                    inDuration: 250,
+                                    onCloseEnd: null,
+                                    onCloseStart: null,
+                                    onOpenEnd: null,
+                                    onOpenStart: null,
+                                    opacity: 0.5,
+                                    outDuration: 250,
+                                    preventScrolling: true,
+                                    startingTop: '4%'
+                                }}
+                                trigger={<Button flat node="button" waves="light" style={{ float: 'center', width: '98%' }}>
+                                {<Icon>add_circle_outline</Icon>}
+                            </Button>}
+                            >
+                            <TextInput label='Name' id='secret-santa-add-name'/>
+                            <TextInput email label="Email" validate error='Invalid email' id='secret-santa-add-email'/>
+                            <p style={{ color: 'red', display: 'none'}}  id='add-error-msg'>Error</p>
+                            <Button modal='close' onClick={(e) => this.handleAddPerson(e, id)} id="add-button" flat type='submit'>Confirm</Button>
+                        </Modal> 
                     </div>
                 </div>
+
+                <Modal
+                    actions={[<Button flat modal="close" node="button" waves="green">Cancel</Button>]}
+                    bottomSheet={false}
+                    fixedFooter={false}
+                    header="Details"
+                    id='random-modal'
+                    options={{
+                        dismissible: true,
+                        endingTop: '10%',
+                        inDuration: 250,
+                        onCloseEnd: null,
+                        onCloseStart: null,
+                        onOpenEnd: null,
+                        onOpenStart: null,
+                        opacity: 0.5,
+                        outDuration: 250,
+                        preventScrolling: true,
+                        startingTop: '4%'
+                    }}
+                    trigger={<Button onClick={this.generateRandom} waves='light' flat large node='button'>Generate</Button>}
+                >
+                    <div id='participants-div'></div>
+                </Modal> 
 
                 <Button className="red" fab={{direction: 'left'}} floating large node="button">
                     <Modal

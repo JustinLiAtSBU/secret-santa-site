@@ -6,6 +6,7 @@ import { Button, Tab, Tabs, Icon, Navbar, NavItem, SideNav, SideNavItem, ReactTa
 import { firestoreConnect } from 'react-redux-firebase';
 import { logoutHandler, createSecretSantaList } from '../../store/database/asynchHandler';
 import SecretSantaList from './SecretSantaList';
+import Particles from 'react-particles-js'
 
 class HomeScreen extends Component {
 
@@ -48,6 +49,19 @@ class HomeScreen extends Component {
                 userLists.push(secretSantaLists[key])
             }
         }
+
+        const particleOpt = {
+            particles: {
+              number: {
+                value: 150,
+                density: {
+                  enable: true,
+                  value_area: 800
+                }
+              }
+            }
+          }
+
         return (
             <div>
                 <Navbar
@@ -127,7 +141,7 @@ const mapDispatchToProps = dispatch => ({
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     firestoreConnect([
-      { collection: 'secretSantaLists'},
-      { collection: 'users'}
+      { collection: 'secretSantaLists' },
+      { collection: 'users' }
     ]),
 )(HomeScreen);

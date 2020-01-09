@@ -1,21 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { NavLink, Redirect } from 'react-router-dom';
-import { Button, Icon, Row, Col, Card, Modal, TextInput } from 'react-materialize';
+import { Button, Icon, Row, Col, Card, CardItem, Modal, TextInput } from 'react-materialize';
 import { firestoreConnect } from 'react-redux-firebase';
 
 class Member extends Component {
 
-    handleMemberEdit = () => {
-        let name = document.getElementById('edit-name-input').value
-        let email = document.getElementById('edit-email-input').value
-        this.props.handleMemberEdit(name, email, this.props.member['email'])
+    handleMemberEdit = (e) => {
+        e.stopPropagation()
+        let name = document.getElementById('edit-name-input' + this.props.member['email']).value
+        let email = document.getElementById('edit-email-input' + this.props.member['email']).value
+        this.props.handleMemberEdit(name, email, this.props.member['email'], this.props.member['name'])
     }
 
     render() {
         const { member } = this.props
-        const removeHeader = 'Remove ' + member['name'] + '?'
         const editHeader = 'Edit ' + member['name'] 
     
         return ( 
@@ -43,24 +42,27 @@ class Member extends Component {
                         <Row>
                             <Col l={12} l={12}>
                                 <Card
-                                    style= {{ cursor: 'pointer' }}
-                                    className="blue-grey darken-1"
+                                    style= {{ cursor: 'pointer', background: '#ff8080' }}
+                                    //className="blue-grey darken-1"
                                     closeIcon={<Icon>close</Icon>}
                                     revealIcon={<Icon>more_vert</Icon>}
                                     textClassName="white-text"
                                     title={member['name']}
                                 >
-                                    {member['email']}
+                                        {member['email']}
+                                    
                                 </Card>
                             </Col>
                         </Row>
                     }
                     >
-                        <TextInput defaultValue={member['name']} label='Name' id='edit-name-input'/>
-                        <TextInput defaultValue={member['email']} email label="Email" validate error='Invalid email' id='edit-email-input'/>
+                        <TextInput label='Name' id={'edit-name-input' + member['email']}/>
+                        <TextInput email label="Email" validate error='Invalid email' id={'edit-email-input' + member['email']}/>
                         <p style={{ color: 'red', display: 'none'}}  id='edit-error-msg'>Error</p>
-                        <Button flat waves='light' modal='close' onClick={this.handleMemberEdit}>Change</Button>
-                        <Button flat waves='light' modal='close' onClick={(e) => this.props.handleRemoveMember(e, member['email'])} style={{ float: 'right' }}>delete</Button>
+                        <div>
+                            <Button flat waves='light' modal='close' onClick={(e) => this.handleMemberEdit(e)} >Change</Button>
+                            <Button flat waves='light' modal='close' onClick={(e) => this.props.handleRemoveMember(e, member['email'])} >delete</Button>
+                        </div>
                 </Modal>
             </div>
         )
