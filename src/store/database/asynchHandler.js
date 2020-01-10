@@ -44,7 +44,8 @@ export const createSecretSantaList = (theName, theDesc, user) => {
         name: theName,
         description: theDesc,
         participants: [],
-        userID: user
+        userID: user,
+        list: []
       }).then(() => {
         dispatch({ type: 'CREATE_SECRET_SANTA_LIST_SUCCESS'});
       }).catch((err) => {

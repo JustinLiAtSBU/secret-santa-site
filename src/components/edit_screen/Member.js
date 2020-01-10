@@ -10,7 +10,9 @@ class Member extends Component {
         e.stopPropagation()
         let name = document.getElementById('edit-name-input' + this.props.member['email']).value
         let email = document.getElementById('edit-email-input' + this.props.member['email']).value
-        this.props.handleMemberEdit(name, email, this.props.member['email'], this.props.member['name'])
+        let wish = document.getElementById('edit-wish-input' + this.props.member['email']).value
+        console.log(wish)
+        this.props.handleMemberEdit(name, email, wish, this.props.member['email'], this.props.member['name'], this.props.member['wish'])
     }
 
     render() {
@@ -43,14 +45,14 @@ class Member extends Component {
                             <Col l={12} l={12}>
                                 <Card
                                     style= {{ cursor: 'pointer', background: '#ff8080' }}
-                                    //className="blue-grey darken-1"
                                     closeIcon={<Icon>close</Icon>}
                                     revealIcon={<Icon>more_vert</Icon>}
                                     textClassName="white-text"
                                     title={member['name']}
                                 >
                                         {member['email']}
-                                    
+                                        <br/>
+                                        Wish: {member['wish']}
                                 </Card>
                             </Col>
                         </Row>
@@ -58,6 +60,7 @@ class Member extends Component {
                     >
                         <TextInput label='Name' id={'edit-name-input' + member['email']}/>
                         <TextInput email label="Email" validate error='Invalid email' id={'edit-email-input' + member['email']}/>
+                        <TextInput label='Wish' id={'edit-wish-input' + member['email']}/>
                         <p style={{ color: 'red', display: 'none'}}  id='edit-error-msg'>Error</p>
                         <div>
                             <Button flat waves='light' modal='close' onClick={(e) => this.handleMemberEdit(e)} >Change</Button>
